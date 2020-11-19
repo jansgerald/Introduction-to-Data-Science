@@ -1,0 +1,228 @@
+---
+title: "Zomato Around the World"
+author: "Jans Gerald Armando Lasrodo"
+date: "`r format(Sys.time(), '%A, %d %B %Y')`"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    df_print: paged
+    theme: darkly
+    highlight: zenburn
+---
+
+<style>
+body {
+text-align: justify}
+</style>
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# A Brief History of Zomato { .tabset }
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Zomato is an Indian restaurant aggregator and food delivery start-up founded by Deepinder Goyal and Pankaj Chaddah in 2008. Zomato provides information, menus and user-reviews of restaurants as well as food delivery options from partner restaurants in select cities. Zomato also began grocery delivery amid the COVID-19 outbreak. As of 2019, the service is available in 24 countries and in more than 10,000 cities.
+
+## Zomato's Expansion Around the World
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Zomato was founded as Foodiebay in 2008, and was renamed Zomato on 18 January 2010 as Zomato Media Pvt. Ltd. In 2011, Zomato expanded across India to Delhi NCR, Mumbai, Bangalore, Chennai, Pune and Kolkata.  In 2012, the company expanded operations internationally in several countries, including the United Arab Emirates, Sri Lanka, Qatar, the United Kingdom, the Philippines,and South Africa. In 2013, Zomato was launched in New Zealand, Turkey, Brazil and Indonesia, with its website and apps available in Turkish, Portuguese, Indonesian and English languages. In April 2014, Zomato launched its services in Portugal, which was followed by launches in Canada, Lebanon and Ireland in 2015. In 2019, Zomato acquired Seattle-based food portal Urbanspoon, which led to the firm's entry into the United States and Australia. This U.S.-expansion brought Zomato into direct competition with similar models such as Yelp and Foursquare.
+
+
+```{r}
+# Data Input and Checking Data
+zomato <- read.csv("data_input/zomato.csv")
+str(zomato)
+```
+
+```{r}
+# Check Dimensions
+dim(zomato)
+```
+
+
+```{r}
+# Sampling data
+head(zomato)
+```
+
+
+```{r}
+# Eliminate unused column
+zomato_clean <- zomato[ , -c(1, 5, 6, 7, 8, 9, 10, 13, 14, 15, 16, 19, 20)]
+head(zomato_clean)
+```
+
+```{r}
+# Creating new variable for Country
+unique(zomato_clean$Country.Code)
+```
+```{r}
+zomato_clean$Country[zomato$Country.Code == 162] <- "Philipine"
+zomato_clean$Country[zomato$Country.Code == 30] <- "Brazil"
+zomato_clean$Country[zomato$Country.Code == 216] <- "USA"
+zomato_clean$Country[zomato$Country.Code == 14] <- "Australia"
+zomato_clean$Country[zomato$Country.Code == 37] <- "Canada"
+zomato_clean$Country[zomato$Country.Code == 184] <- "Singapore"
+zomato_clean$Country[zomato$Country.Code == 214] <- "United Arab Emirates"
+zomato_clean$Country[zomato$Country.Code == 1] <- "India"
+zomato_clean$Country[zomato$Country.Code == 94] <- "Indonesia"
+zomato_clean$Country[zomato$Country.Code == 148] <- "New Zealand"
+zomato_clean$Country[zomato$Country.Code == 215] <- "England"
+zomato_clean$Country[zomato$Country.Code == 166] <- "Qatar"
+zomato_clean$Country[zomato$Country.Code == 189] <- "South Africa"
+zomato_clean$Country[zomato$Country.Code == 191] <- "Sri Lanka"
+zomato_clean$Country[zomato$Country.Code == 208] <- "Turkey"
+```
+
+```{r}
+head(zomato_clean)
+```
+
+```{r}
+# Change Data Type
+zomato_clean$Country.Code <- as.factor(zomato_clean$Country.Code)
+zomato_clean$Price.range <- as.factor(zomato_clean$Price.range)
+zomato_clean$Country <- as.factor(zomato_clean$Country)
+```
+
+## A Glimpse about Zomato Around the World
+
+```{r}
+# Check Summary
+summary(zomato_clean, maxsum = 20)
+```
+For this report, we tried to analyze 9551 restaurants located in 15 countries around the world. Based on the summary, we can find that India has the highest number of restaurants and is followed by the United States and The United Kingdom.
+
+```{r}
+pie(xtabs( ~ Country, zomato_clean))
+```
+Based on the pie chart above, we can see clearly that most of the number of restaurants listed on zomato can be found in India with USA following behind.
+
+# The city with Most Amount of Restaurant in India
+
+```{r}
+India <- as.data.frame(sort(prop.table(table((zomato_clean[zomato_clean$Country == "India","City"]))),
+                            decreasing = T))
+names(India)[1] <- paste("City")
+India
+```
+
+# Country with Highest Average Restaurant Rating
+
+There can be a lot of restaurant in every country, but how do we know whether it’s good or not? The easiest way to find out is by finding reviews and ratings from the customers.
+
+```{r}
+philipine.mean <- (mean(zomato_clean$Aggregate.rating[zomato_clean$Country == "Philipine"]))
+brazil.mean <- (mean(zomato_clean$Aggregate.rating[zomato_clean$Country == "Brazil"]))
+USA.mean <- (mean(zomato_clean$Aggregate.rating[zomato_clean$Country == "USA"]))
+australia.mean <- (mean(zomato_clean$Aggregate.rating[zomato_clean$Country == "Australia"]))
+canada.mean <- (mean(zomato_clean$Aggregate.rating[zomato_clean$Country == "Canada"]))
+singapore.mean <- (mean(zomato_clean$Aggregate.rating[zomato_clean$Country == "Singapore"]))
+unitedarabemirates.mean <- (mean(zomato_clean$Aggregate.rating[zomato_clean$Country == "United Arab Emirates"]))
+india.mean <- (mean(zomato_clean$Aggregate.rating[zomato_clean$Country == "India"]))
+indonesia.mean <- (mean(zomato_clean$Aggregate.rating[zomato_clean$Country == "Indonesia"]))
+newzealand.mean <- (mean(zomato_clean$Aggregate.rating[zomato_clean$Country == "New Zealand"]))
+england.mean <- (mean(zomato_clean$Aggregate.rating[zomato_clean$Country == "England"]))
+qatar.mean <- (mean(zomato_clean$Aggregate.rating[zomato_clean$Country == "Qatar"]))
+southafrica.mean <- (mean(zomato_clean$Aggregate.rating[zomato_clean$Country == "South Africa"]))
+srilanka.mean <- (mean(zomato_clean$Aggregate.rating[zomato_clean$Country == "Sri Lanka"]))
+turkey.mean <- (mean(zomato_clean$Aggregate.rating[zomato_clean$Country == "Turkey"]))
+
+country.mean <- cbind(Country=c("Philipine",
+                                "Brazil",
+                                "USA",
+                                "Australia",
+                                "Canada",
+                                "Singapore",
+                                "United Arab Emirates", 
+                                "India",
+                                "Indonesia",
+                                "New Zealand",
+                                "England",
+                                "Qatar",
+                                "South Africa",
+                                "Sri Lanka",
+                                "Turkey"))
+country.mean1 <- cbind(country.mean,as.data.frame(c(philipine.mean,
+                                                    brazil.mean,
+                                                    USA.mean,
+                                                    australia.mean,
+                                                    canada.mean,
+                                                    singapore.mean,
+                                                    unitedarabemirates.mean,
+                                                    india.mean,
+                                                    indonesia.mean,
+                                                    newzealand.mean,
+                                                    england.mean,
+                                                    qatar.mean,
+                                                    southafrica.mean,
+                                                    srilanka.mean,
+                                                    turkey.mean)))
+
+names(country.mean1)[2] <- paste("Mean")
+
+country.mean_sort <- data.frame(sort(xtabs(Mean ~ Country, country.mean1), decreasing = T))
+
+names(country.mean_sort)[2] <- paste("Mean")
+
+country.mean_sort
+```
+
+```{r}
+barplot(xtabs(Mean ~ Country, country.mean_sort), ylim = c(0,5))
+```
+Based on data, most of restaurant in Philipine can be categorized as best, because the average of the restaurant rating in Philipine is 4.468182. We can say that you can go wrong when you pick any restaurant in Philipine. On the other hand, you need to do more research when you want to eat at restaurant in India, since the average rating for its’ restaurant is 2.523324.
+
+# Restaurant in Indonesia
+
+```{r}
+indonesia <- subset(x = zomato_clean,
+                    Country == "Indonesia")
+head(indonesia)
+```
+
+```{r}
+str(indonesia)
+```
+
+```{r}
+indonesia$City <- as.factor(indonesia$City)
+```
+
+
+```{r}
+summary(indonesia)
+```
+
+```{r}
+nrow(indonesia)
+```
+
+At least, there are 21 restaurant which you can find in Zomato Indonesia, which most of them located in Jakarta. We can say that most of the restaurant in Indonesia are delicious, since the average star rating for restaurant in Indonesia is 4.295.
+
+```{r}
+city.indonesia <- as.data.frame(sort(table(droplevels(indonesia$City)), decreasing = T))
+
+city.indonesia
+```
+
+From the data, we can see that Jakarta is city with the most amount of restaurant in Zomato.
+
+# Conclusion
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Zomato is an Indian restaurant aggregator and food delivery start-up founded by Deepinder Goyal and Pankaj Chaddah in 2008. India has the highest number of restaurants and is followed by the United States and The United Kingdom. The city with most amount of restaurant in India is New Delhi. Most of restaurant in Philipine can be categorized as best, because the average of the restaurant rating in Philipine is 4.468182. We need to do more research when we want to eat at restaurant in India, since the average rating for its’ restaurant is 2.523324. However, don’t forget about Indonesia, with average of 4.295 star rating, Indonesia ranks third out of all countries on Zomato worldwide.
+
+# Reference
+
+1. https://en.wikipedia.org/wiki/Zomato
+2. https://www.kaggle.com/shrutimehta/zomato-restaurants-data
+
+
+
+
+
+
+
+
+
+
